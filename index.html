@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="core.js"></script>
+    <script src="enc-base64.js"></script>
+    <script src="hmac.js"></script>
+    <script src="sha256.js"></script>
+
+    <script>
+
+        function getBase64Encoded(rawStr) {
+            var wordArray = CryptoJS.enc.Utf8.parse(rawStr);
+            var result = CryptoJS.enc.Base64.stringify(wordArray);
+            return result;
+        }
+
+        function getBase64Decoded(encStr) {
+            var wordArray = CryptoJS.enc.Base64.parse(encStr);
+            var result = wordArray.toString(CryptoJS.enc.Utf8);
+            return result;
+        }
+
+        function doEncode() {
+            var txtEncode = document.getElementById('txtEncode');
+            var resultEncode = document.getElementById('resultEncode');
+            resultEncode.innerText = getBase64Encoded(txtEncode.value);
+        }
+
+        function doDecode() {
+            var txtDecode = document.getElementById('txtDecode');
+            var resultDecode = document.getElementById('resultDecode');
+            resultDecode.innerText = getBase64Decoded(txtDecode.value);
+        }
+
+        function createJWT() {
+            var txtHeader = document.getElementById('txtHeader');
+            var txtPayload = document.getElementById('txtPayload');
+            var txtSecret = document.getElementById('txtSecret');
+            var resultJWT = document.getElementById('resultJWT');
+
+            var base64Header = getBase64Encoded(txtHeader.value);
+            var base64Payload = getBase64Encoded(txtPayload.value);
+
+            var signature = CryptoJS.HmacSHA256(base64Header + '.' + base64Payload, txtSecret.value);
+            var base64sign = CryptoJS.enc.Base64.stringify(signature);
+
+            var jwt = base64Header + '.' + base64Payload + '.' + base64sign;
+            resultJWT.innerText = jwt;
+        }
+
+    //    {"typ": "JWT","alg": "HS256"}
+
+    //    {"iss": "ABC Services", "username": "Jag", "admin": false}
+
+
+    </script>
+
+</head>
+
+<body>
+    <table>
+        <tr>
+            <td>Enter string to base64 encoder: </td>
+            <td><input type="text" id="txtEncode"></td>
+            <td><button onclick="doEncode() ">Encode</button></td>
+        </tr>
+        <tr>
+            <td>Result: </td>
+            <td><span id="resultEncode"></span></td>
+        </tr>
+    </table>
+    <hr>
+
+    <table>
+        <tr>
+            <td>Enter string to base64 decoder: </td>
+            <td><input type="text" id="txtDecode"></td>
+            <td><button onclick="doDecode() ">Decode</button></td>
+        </tr>
+        <tr>
+            <td>Result: </td>
+            <td><span id="resultDecode"></span></td>
+        </tr>
+    </table>
+    <hr>
+
+    <table>
+        <tr>
+            <td>Enter JWT header: </td>
+            <td><input type="text" id="txtHeader"></td>
+        </tr>
+        <tr>
+            <td>Enter JWT payload: </td>
+            <td><input type="text" id="txtPayload"></td>
+        </tr>
+        <tr>
+            <td>Enter Hash secret/password: </td>
+            <td><input type="text" id="txtSecret"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><button onclick="createJWT()">ShowJWT</button></td>
+        </tr>
+        <tr>
+            <td>Result: </td>
+            <td>
+                <div id="resultJWT" style="width: 600px;overflow-wrap: break-word"></div>
+            </td>
+        </tr>
+
+    </table>
+
+</body>
+
+</html>
